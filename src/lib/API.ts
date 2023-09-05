@@ -336,6 +336,7 @@ class API {
 
   private _loadAutomation(filename: string) {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const newC = require(filename);
       this._automations.set(filename, new newC());
     } catch (e) {

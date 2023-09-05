@@ -52,7 +52,7 @@ class MQTT {
    *
    * @return  {[type]}           [return description]
    */
-  private handleMessage(topic: string, message: any, packet: any) {
+  private handleMessage(topic: string, message: any) {
     if (this.subscriptions.has(topic)) {
       const subs = this.subscriptions.get(topic);
       if (subs) {

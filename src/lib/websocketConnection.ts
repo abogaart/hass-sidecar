@@ -67,7 +67,7 @@ class WebsocketConnection {
      * When the connection is closed it's time to clean up the house calling all _closeEvents callbacks
      * Then set timeout to reconnect every 5 seconds.
      */
-    this._conn.on('close', code => {
+    this._conn.on('close', () => {
       Logger.error('Connection with Home Assistant closed');
       try {
         this._conn.close();
@@ -202,7 +202,7 @@ class WebsocketConnection {
    *
    * @return  {Promise<any>}              Promise with the result
    */
-  public callService(domain: string, service: string, attributes: any) {
+  public callService(domain: string, service: string, attributes: any): Promise<any> {
     return new Promise((resolve, reject) => {
       const message = {
         id: ++this._id,
