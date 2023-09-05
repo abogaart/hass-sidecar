@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node ./src/index.ts",
     "dev": "nodemon",
-    "docs": "typedoc --plugin typedoc-plugin-markdown --exclude ./src/automations ./src/ ./docs/",
+    "docs": "typedoc --plugin typedoc-plugin-markdown --entryPointStrategy expand --exclude ./src/automations ./src/ ./docs/",
     "lint": "npx eslint .",
     "format": "npx prettier --ignore-path .gitignore --write \"src/**/*.+(js|ts|json)\""
   },

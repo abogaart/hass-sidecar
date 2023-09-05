@@ -1,5 +1,4 @@
-import mqtt from 'mqtt';
-import type { Client } from 'mqtt';
+import mqtt, { MqttClient } from 'mqtt';
 
 import Logger from './Logger';
 
@@ -18,7 +17,7 @@ interface INewSubscription {
  * Manage the MQTT connection with the server
  */
 class MQTT {
-  private client: Client;
+  private client: MqttClient;
   private subscriptions: Map<string, ISubscription[]> = new Map();
   public static instance: MQTT;
 
