@@ -1,22 +1,26 @@
-import ws from 'ws'
-import { EventEmitter } from 'events'
-import { IState } from '../interfaces/IState'
+import { EventEmitter } from 'node:events';
+import ws from 'ws';
+
+import { IState } from '../interfaces/IState';
 import Logger from './Logger';
 
-type ICloseCallback = () => void
+type ICloseCallback = () => void;
 
 /**
  * Class to manage the websocket connection with Home Assistant
  */
 class WebsocketConnection {
-  private _uri: string
-  private _token: string
-  private _conn!: ws
-  private _listeners: EventEmitter
-  private _id: number = 0
-  private _promises: Map<number, { resolve: (message: any) => void, reject: (error: Error) => void }>
-  private _eventSubscribers: Map<number, (message: any) => void>
-  private _onCloseEvents: ICloseCallback[] = []
+  private _uri: string;
+  private _token: string;
+  private _conn!: ws;
+  private _listeners: EventEmitter;
+  private _id: number = 0;
+  private _promises: Map<
+    number,
+    { resolve: (message: any) => void; reject: (error: Error) => void }
+  >;
+  private _eventSubscribers: Map<number, (message: any) => void>;
+  private _onCloseEvents: ICloseCallback[] = [];
 
   /**
    * Constructor. Initializes the class
@@ -27,62 +31,62 @@ class WebsocketConnection {
    * @return  {WebsocketConnection}         Returns the instance
    */
   public constructor(host: string, token: string) {
-    this._uri = `ws://${host}/api/websocket`
-    this._token = token
+    this._uri = `ws://${host}/api/websocket`;
+    this._token = token;
 
-    // All the listeners, promises and eventSubscribers will be estored in these properties for easy delete
-    this._listeners = new EventEmitter()
-    this._promises = new Map()
-    this._eventSubscribers = new Map()
+    // All the listeners, promises and eventSubscribers will be stored in these properties for easy delete
+    this._listeners = new EventEmitter();
+    this._promises = new Map();
+    this._eventSubscribers = new Map();
 
-    this._createConnection()
+    this._createConnection();
   }
 
   /**
-   * Creates the websolcket connection and stores it in the _conn property
+   * Creates the websocket connection and stores it in the _conn property
    *
    * @return  {void}
    */
   private _createConnection(): void {
     // Lets connect throw websockets
-    this._conn = new ws(this._uri)
+    this._conn = new ws(this._uri);
 
     /**
      * When connection error occurs, close the connection and print log
      */
     this._conn.on('error', (error: Error) => {
       try {
-        this._conn.close()
+        this._conn.close();
       } catch (e) {
-        Logger.error(e)
+        Logger.error(e);
       }
-      Logger.error(error)
-    })
+      Logger.error(error);
+    });
 
     /**
      * When the connection is closed it's time to clean up the house calling all _closeEvents callbacks
      * Then set timeout to reconnect every 5 seconds.
      */
-    this._conn.on('close', (code) => {
-      Logger.error('Connection with Homeassistant closed')
+    this._conn.on('close', code => {
+      Logger.error('Connection with Home Assistant closed');
       try {
-        this._conn.close()
+        this._conn.close();
       } catch (e) {
-        Logger.error(e)
+        Logger.error(e);
       }
       for (const callback of this._onCloseEvents) {
         try {
-          callback()
+          callback();
         } catch (e) {
-          Logger.error(e)
+          Logger.error(e);
         }
       }
 
       setTimeout(() => {
-        Logger.info('Reconnecting')
-        this._createConnection()
-      }, 5000)
-    })
+        Logger.info('Reconnecting');
+        this._createConnection();
+      }, 5000);
+    });
 
     /**
      * On open connection, notify to all listeners, so they can start to interact with the host
@@ -96,16 +100,17 @@ class WebsocketConnection {
      * Once we are connected, launch authentication process
      */
     this._conn.once('open', () => {
-      // Aunthenticate
-      this._conn.send(JSON.stringify({
-        type: 'auth',
-        access_token: this._token
-      }))
-    })
+      // Authenticate
+      this._conn.send(
+        JSON.stringify({
+          type: 'auth',
+          access_token: this._token,
+        }),
+      );
+    });
 
     // Every message is handled by the same way
-    this._conn.on('message', this._handleMessages.bind(this))
-
+    this._conn.on('message', this._handleMessages.bind(this));
   }
 
   /**
@@ -116,9 +121,12 @@ class WebsocketConnection {
    *
    * @return  {WebsocketConnection}            Returns instance
    */
-  public addEventListener(event: string, callback: (message: any) => void): WebsocketConnection {
-    this._listeners.addListener(event, callback)
-    return this
+  public addEventListener(
+    event: string,
+    callback: (message: any) => void,
+  ): WebsocketConnection {
+    this._listeners.addListener(event, callback);
+    return this;
   }
 
   /**
@@ -129,9 +137,12 @@ class WebsocketConnection {
    *
    * @return  {WebsocketConnection}            Instance
    */
-  public removeEventListener(event: string, callback: (message: any) => void): WebsocketConnection {
-    this._listeners.removeListener(event, callback)
-    return this
+  public removeEventListener(
+    event: string,
+    callback: (message: any) => void,
+  ): WebsocketConnection {
+    this._listeners.removeListener(event, callback);
+    return this;
   }
 
   /**
@@ -144,43 +155,46 @@ class WebsocketConnection {
     return new Promise((resolve, reject) => {
       const message = {
         id: ++this._id,
-        type: 'get_states'
-      }
+        type: 'get_states',
+      };
 
-      this._promises.set(message.id, { resolve, reject })
-      this._conn.send(JSON.stringify(message))
-    })
+      this._promises.set(message.id, { resolve, reject });
+      this._conn.send(JSON.stringify(message));
+    });
   }
 
   /**
    * Subscribe to Home Assistant event
    *
-   * @param   {string}        event     Evento to subscribe, for example "state_changed"
+   * @param   {string}        event     Event to subscribe, for example "state_changed"
    * @param   {function}      callback  Callback function
    *
    * @return  {Promise<any>}            Promise with the result of subscription
    */
-  public subscribeEvent(event: string, callback: (message: any) => void): Promise<any> {
+  public subscribeEvent(
+    event: string,
+    callback: (message: any) => void,
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
-      const id = ++this._id
+      const id = ++this._id;
       const message: any = {
         id,
         type: 'subscribe_events',
-        event_type: event
-      }
+        event_type: event,
+      };
 
       if (typeof callback === 'function') {
-        message.event_type = event
+        message.event_type = event;
       }
 
-      this._eventSubscribers.set(id, callback)
-      this._promises.set(id, { resolve, reject })
-      this._conn.send(JSON.stringify(message))
-    })
+      this._eventSubscribers.set(id, callback);
+      this._promises.set(id, { resolve, reject });
+      this._conn.send(JSON.stringify(message));
+    });
   }
 
   /**
-   * Call a Home Assistant sercive
+   * Call a Home Assistant service
    *
    * @param   {string}    domain      Domain of the service, for example: "light"
    * @param   {string}    service     Service to call in that domain, for example: "turn_on"
@@ -195,12 +209,12 @@ class WebsocketConnection {
         type: 'call_service',
         domain,
         service,
-        service_data: attributes
-      }
+        service_data: attributes,
+      };
 
-      this._conn.send(JSON.stringify(message))
-      this._promises.set(message.id, { resolve, reject })
-    })
+      this._conn.send(JSON.stringify(message));
+      this._promises.set(message.id, { resolve, reject });
+    });
   }
 
   /**
@@ -211,90 +225,91 @@ class WebsocketConnection {
    * @return  {WebsocketConnection}       Instance
    */
   public onClose(callback: ICloseCallback): WebsocketConnection {
-    this._onCloseEvents.push(callback)
-    return this
+    this._onCloseEvents.push(callback);
+    return this;
   }
 
   /**
    * Handles every message from Home Assistant
    *
-   * @param   {string}  data  Data recived in string format (has to be parsed as JSON)
+   * @param   {string}  data  Data received in string format (has to be parsed as JSON)
    *
    * @return  {void}
    */
   private _handleMessages(data: string): void {
     // Parse data to JSON
-    let json: any
+    let json: any;
     try {
-      json = JSON.parse(data)
+      json = JSON.parse(data);
     } catch (e) {
-      Logger.error(e)
-      return
+      Logger.error(e);
+      return;
     }
 
-    // Managin authentication flow
+    // Managing authentication flow
     if (json.type) {
       if (json.type === 'auth_ok') {
-        Logger.info('Authentication successfully')
-        this._listeners.emit('ready')
+        Logger.info('Authentication successfully');
+        this._listeners.emit('ready');
       } else if (json.type === 'auth_invalid') {
-        Logger.error('Invalid authentication')
-        this._conn.close()
+        Logger.error('Invalid authentication');
+        this._conn.close();
       } else if (json.type === 'auth_required') {
-        Logger.info('Authentication required')
-        return
+        Logger.info('Authentication required');
+        return;
       }
     }
 
     // If this message is a response o a previous call...
     if (json.id && this._promises.has(json.id) && json.type === 'result') {
       try {
-        this._responsePromise(json)
+        this._responsePromise(json);
       } catch (e) {
-        Logger.error(e)
+        Logger.error(e);
       }
-    } else if (json.id && this._eventSubscribers.has(json.id)) {  // If is a event that has subscribers...
+    } else if (json.id && this._eventSubscribers.has(json.id)) {
+      // If is a event that has subscribers...
       try {
-        this._reponseEvent(json)
+        this._responseEvent(json);
       } catch (e) {
-        Logger.error(e)
+        Logger.error(e);
       }
     }
   }
 
   private _responsePromise(data: any): void {
-    const promise = this._promises.get(data.id)
+    const promise = this._promises.get(data.id);
 
     if (promise) {
-      const { resolve, reject } = promise
+      const { resolve, reject } = promise;
 
       if (data.success) {
         try {
-          resolve(data.result)
+          resolve(data.result);
         } catch (e) {
-          Logger.error(e)
+          Logger.error(e);
         }
       } else {
         try {
-          reject(data)
+          reject(data);
         } catch (e) {
-          Logger.error(e)
+          Logger.error(e);
         }
       }
     }
   }
 
-  private _reponseEvent(data: any): void {
-    const callback = this._eventSubscribers.get(data.id)
+  private _responseEvent(data: any): void {
+    const callback = this._eventSubscribers.get(data.id);
 
     if (callback) {
       try {
-        callback(data.event)
+        callback(data.event);
       } catch (e) {
-        Logger.error(e)
+        Logger.error(e);
       }
     }
   }
 }
 
-export default WebsocketConnection
+export default WebsocketConnection;

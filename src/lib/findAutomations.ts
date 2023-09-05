@@ -1,81 +1,83 @@
-import fs from 'fs'
-import path from 'path'
-import Logger from './Logger'
+import fs from 'node:fs';
+import path from 'node:path';
+
+import Logger from './Logger';
 
 type IOptions = {
-  filter?: (file: string) => Promise<boolean> | boolean
-  recursive?: boolean
-}
+  filter?: (file: string) => Promise<boolean> | boolean;
+  recursive?: boolean;
+};
 
-const findAutomations = async (dir: string, options?: IOptions): Promise<string[]> => {
+const findAutomations = async (
+  dir: string,
+  options?: IOptions,
+): Promise<string[]> => {
   if (!options) {
     options = {
-      recursive: false
-    }
+      recursive: false,
+    };
   }
 
-  let files: string[] = []
+  let files: string[] = [];
   // Check is a dir
   try {
-    const stat = await fs.promises.stat(dir)
+    const stat = await fs.promises.stat(dir);
     if (!stat.isDirectory()) {
-      return []
+      return [];
     }
   } catch (e) {
-    Logger.error(e)
-    return []
+    Logger.error(e);
+    return [];
   }
 
   // Get dir content
-  let content
+  let content;
   try {
-    content = await fs.promises.readdir(dir)
+    content = await fs.promises.readdir(dir);
   } catch (e) {
-    Logger.error(e)
-    return []
+    Logger.error(e);
+    return [];
   }
 
   for (const file of content) {
-    const filePath = path.join(dir, file)
+    const filePath = path.join(dir, file);
 
     try {
-      const stat = await fs.promises.stat(filePath)
+      const stat = await fs.promises.stat(filePath);
       if (stat.isFile()) {
         if (options.filter) {
           try {
-            const allowed = await options.filter(filePath)
+            const allowed = await options.filter(filePath);
             if (!allowed) {
-              continue
+              continue;
             } else {
-              files.push(filePath)
+              files.push(filePath);
             }
           } catch (e) {
-            Logger.error(e)
-            continue
+            Logger.error(e);
+            continue;
           }
         } else {
-          files.push(filePath)
+          files.push(filePath);
         }
       } else if (!options.recursive) {
-        continue
+        continue;
       }
     } catch (e) {
-      Logger.error(e)
-      continue
+      Logger.error(e);
+      continue;
     }
-    // Recusrive iteration
+    // Recursive iteration
     try {
-      const founded = await findAutomations(filePath, options)
-      files = files.concat(founded)
+      const founded = await findAutomations(filePath, options);
+      files = files.concat(founded);
     } catch (e) {
-      Logger.error(e)
-      continue
+      Logger.error(e);
+      continue;
     }
   }
 
+  return files.sort();
+};
 
-  return files.sort()
-}
-
-export default findAutomations
-
+export default findAutomations;
