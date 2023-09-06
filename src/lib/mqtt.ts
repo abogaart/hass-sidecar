@@ -1,4 +1,4 @@
-import mqtt, { MqttClient } from 'mqtt';
+import { connect, IClientPublishOptions, IClientSubscribeOptions, MqttClient } from 'mqtt';
 
 import Logger from './Logger';
 
@@ -32,7 +32,7 @@ class MQTT {
       reconnectPeriod: 5000,
       clientId: 'hass-sidecar',
     };
-    this.client = mqtt.connect(uri, options);
+    this.client = connect(uri, options);
     this.client.once('connect', () => {
       Logger.info('Connection with MQTT');
     });
@@ -91,7 +91,7 @@ class MQTT {
    */
   public subscribe(
     topic: string,
-    options: mqtt.IClientSubscribeOptions,
+    options: IClientSubscribeOptions,
     callback: ISubscriptionCallback,
   ): INewSubscription {
     // At the moment, wildcards are not allowed in subscriptions.
@@ -138,7 +138,7 @@ class MQTT {
   public publish(
     topic: string,
     payload: string,
-    options?: mqtt.IClientPublishOptions,
+    options?: IClientPublishOptions,
   ) {
     options = options || {};
     this.client.publish(topic, payload, options);
