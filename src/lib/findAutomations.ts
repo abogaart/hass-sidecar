@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import Logger from './Logger';
+import { Logger } from '@utils/Logger';
 
 type IOptions = {
   filter?: (file: string) => Promise<boolean> | boolean;

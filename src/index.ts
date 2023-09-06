@@ -3,7 +3,7 @@ import path from 'node:path';
 import dotenv from 'dotenv';
 
 import API from './lib/API';
-import Logger from './lib/Logger';
+import { Logger } from '@utils/Logger';
 
 // Load environment variables
 dotenv.config();

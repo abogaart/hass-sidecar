@@ -1,6 +1,6 @@
 import { connect, IClientPublishOptions, IClientSubscribeOptions, MqttClient } from 'mqtt';
 
-import Logger from './Logger';
+import { Logger } from '@utils/Logger';
 
 export type ISubscriptionCallback = (topic: string, payload: any) => void;
 interface ISubscription {

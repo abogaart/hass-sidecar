@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events';
 import ws from 'ws';
 
 import { IState } from '../interfaces/IState';
-import Logger from './Logger';
+import { Logger } from '@utils/Logger';
 
 type ICloseCallback = () => void;
 
@@ -49,6 +49,7 @@ class WebsocketConnection {
    */
   private _createConnection(): void {
     // Lets connect throw websockets
+    Logger.info(this._uri);
     this._conn = new ws(this._uri);
 
     /**

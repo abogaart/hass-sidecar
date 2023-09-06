@@ -30,7 +30,7 @@ const log = (color: IColor, text: any) => {
   console.log(`${code}${date}\x1b[0m - ${text}`);
 };
 
-export default class Logger {
+export class Logger {
   static log(text: any, color: IColor = 'white') {
     log(color, `[LOG] ${text}`);
   }
