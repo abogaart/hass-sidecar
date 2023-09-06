@@ -1,8 +1,8 @@
 import mqtt from 'mqtt';
 
-import API from '../lib/API';
-import MQTT from '../lib/mqtt';
-import { ISubscriptionCallback } from '../lib/mqtt';
+import API from '@lib/API';
+import MQTT from '@lib/mqtt';
+import { ISubscriptionCallback } from '@lib/mqtt';
 import { IStateCallback } from './IState';
 import { Logger } from '@utils/Logger';
 

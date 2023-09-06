@@ -2,7 +2,9 @@
   "extends": "@tsconfig/node18",
   "compilerOptions": {
     "paths": {
-      "@utils/*": ["./src/utils/*"]
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@utils/*": ["./src/utils/*"],
     }
   },
   "ts-node": {

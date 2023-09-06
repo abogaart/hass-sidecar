@@ -1,7 +1,7 @@
 import { EventEmitter } from 'node:events';
 import ws from 'ws';
 
-import { IState } from '../interfaces/IState';
+import { IState } from '@interfaces/IState';
 import { Logger } from '@utils/Logger';
 
 type ICloseCallback = () => void;

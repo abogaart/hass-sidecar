@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import dotenv from 'dotenv';
 
-import API from './lib/API';
+import API from '@lib/API';
 import { Logger } from '@utils/Logger';
 
 // Load environment variables

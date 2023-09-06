@@ -2,8 +2,8 @@ import path from 'node:path';
 import chokidar from 'chokidar';
 
 import websocketConnection from './websocketConnection';
-import { IState, IStateCallback } from '../interfaces/IState';
-import { Automation } from '../interfaces/Automation';
+import { IState, IStateCallback } from '@interfaces/IState';
+import { Automation } from '@interfaces/Automation';
 // import findAutomations from './findAutomations'
 import { Logger } from '@utils/Logger';
 
