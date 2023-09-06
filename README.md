@@ -14,7 +14,25 @@ Home Assistant is a great platform to manage our smart devices, but for me the a
 
 ## Getting started
 
-For detailed information about clases and methods, go to [docs/globals.md](docs/globals.md)
+For detailed information about classes and methods, go to [docs/globals.md](docs/globals.md)
+
+To run the app, we need to connect to the websocket API of Home Assistant and to a MQTT broker. The values of these connections are provided by environment variables. The variables are:
+
+- **HA_HOST**: The address of your Home Assistant installation.
+  - Example: `192.168.1.17:8123` or `homeassistant.local:8123`
+- **HA_TOKEN**: The token provided by Home Assistant to connect to the websocket API.
+  - You can get it from your profile page in Home Assistant, in the **Long-Lived Access Tokens** section.
+  - It is recommended to create a new token for this app.
+- **MQTT_URI**: The URI of your MQTT broker.
+  - You need to enable the **MQTT** integration in Home Assistant, see https://www.home-assistant.io/integrations/mqtt/ for more information.
+  - You can use the **Mosquitto broker** or any other MQTT broker.
+  - The value is defined as: `mqtt://user:pass@server:port`
+    - `user` - The user to connect to the broker
+    - `pass` - The password to connect to the broker
+    - `server` - The address of the broker
+    - `port` - The port of the broker
+      - If you are using the Mosquitto broker, the default port is `1883`
+
 
 ### Installation
 
@@ -133,7 +151,11 @@ module.exports = class MyAutomation extends Automation {
 
 ### Timeouts, intervals and runAt
 
-To be able to create tasks in intervals or timeouts or simply execute a function at a certain time. You must use the methods of the Automation class dedicated to this. Do not use the NodeJS commands (setInterval, setTimeout, clearInterva, clearTimeout) because if your class has to be reloaded (due to a modification or because it has been removed), those callbacks will not be able to be removed, which will cause them to be executed anyway or the application fail.
+To be able to create tasks in intervals or timeouts or simply execute a function at a certain time. You must use the
+methods of the Automation class dedicated to this. Do not use the NodeJS commands (setInterval, setTimeout,
+clearInterval, clearTimeout) because if your class has to be reloaded (due to a modification or because it has been
+removed), those callbacks will not be able to be removed, which will cause them to be executed anyway or the
+application fail.
 
 Let's see an example of this:
 
@@ -153,7 +175,7 @@ import { Automation } from '../interfaces/Automation.ts'
 import moment from 'moment'
 
 module.exports = class CrazyLights extends Automation {
-  
+
   // Define our private properties
   private lightEntity = '<entity_id>'
   private speakerEntity = '<entity_id>'
