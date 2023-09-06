@@ -33,7 +33,6 @@ To run the app, we need to connect to the websocket API of Home Assistant and to
     - `port` - The port of the broker
       - If you are using the Mosquitto broker, the default port is `1883`
 
-
 ### Installation
 
 #### > NodeJS version
@@ -244,4 +243,15 @@ module.exports = class SayHi extends Automation {
 
 ## About logging
 
-You can use for loggin the class provided for it. Why? Because it allows you to trace the time of every log and define color for each line based on his type (debug, info, error, log, warning...). Of course you can still use the typical console.[log|error|info...], but it will be horrible for your eyes xD.
+The app defines a custom logger that you can use in your automations. It allows you to trace the time of every log
+message and defines a color for each line based on the type:
+  `debug()` = green
+  `info()` = blue
+  `warning()` = yellow
+  `error()` = red
+  `log()` = white
+
+The typical `console.log()` statements are not recommended and will trigger lint errors.
+
+### Debug mode
+To enable debug mode, you have to set the environment variable **DEBUG** to `true`.

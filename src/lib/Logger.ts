@@ -31,19 +31,25 @@ const log = (color: IColor, text: any) => {
 };
 
 export default class Logger {
-  static log(text: any) {
-    log('white', `[LOG] ${text}`);
+  static log(text: any, color: IColor = 'white') {
+    log(color, `[LOG] ${text}`);
   }
 
   static info(text: any) {
-    log('blue', `[INF] ${text}`);
+    log('blue', `[INFO] ${text}`);
   }
 
   static debug(text: any) {
-    log('green', `[DEB] ${text}`);
+    if (process.env.DEBUG) {
+      log('green', `[DEBUG] ${text}`);
+    }
+  }
+
+  static warn(text: any) {
+    log('yellow', `[WARN] ${text}`);
   }
 
   static error(text: any) {
-    log('red', `[ERR] ${text}`);
+    log('red', `[ERROR] ${text}`);
   }
 }
