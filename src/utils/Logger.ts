@@ -2,7 +2,7 @@ import moment from 'moment';
 
 type IColor = 'red' | 'green' | 'blue' | 'yellow' | 'white';
 
-const log = (color: IColor, text: any) => {
+const log = (color: IColor, text: any, ...optionalParams: any[]) => {
   let code: string;
   switch (color) {
     case 'blue':
@@ -27,29 +27,29 @@ const log = (color: IColor, text: any) => {
   const date = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
 
   // eslint-disable-next-line no-console
-  console.log(`${code}${date}\x1b[0m - ${text}`);
+  console.log(`${code}${date}\x1b[0m - ${text}`, ...optionalParams);
 };
 
 export class Logger {
-  static log(text: any, color: IColor = 'white') {
-    log(color, `[LOG] ${text}`);
+  static log(text: any, ...optionalParams: any[]) {
+    log('white', `[LOG] ${text}`, ...optionalParams);
   }
 
-  static info(text: any) {
-    log('blue', `[INFO] ${text}`);
+  static info(text: any, ...optionalParams: any[]) {
+    log('blue', `[INFO] ${text}`, ...optionalParams);
   }
 
-  static debug(text: any) {
+  static debug(text: any, ...optionalParams: any[]) {
     if (process.env.DEBUG) {
-      log('green', `[DEBUG] ${text}`);
+      log('green', `[DEBUG] ${text}`, ...optionalParams);
     }
   }
 
-  static warn(text: any) {
-    log('yellow', `[WARN] ${text}`);
+  static warn(text: any, ...optionalParams: any[]) {
+    log('yellow', `[WARN] ${text}`, ...optionalParams);
   }
 
-  static error(text: any) {
-    log('red', `[ERROR] ${text}`);
+  static error(text: any, ...optionalParams: any[]) {
+    log('red', `[ERROR] ${text}`, ...optionalParams);
   }
 }
