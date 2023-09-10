@@ -1,3 +1,5 @@
 node_modules
 src/automations
 .env
+
+.DS_Store
